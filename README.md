@@ -8,7 +8,7 @@ Una experiencia web para un estudio creativo: tipografía expresiva, una escultu
 
 **[Explorar la demo ↗](https://pablo2611.github.io/otro-plano/)** · [Ver el código](https://github.com/pablo2611/otro-plano)
 
-[![Vista previa de Otro Plano](docs/preview.jpg)](https://pablo2611.github.io/otro-plano/)
+<a href="https://pablo2611.github.io/otro-plano/"><img src="docs/project-card.svg" alt="Otro Plano — explorar la demo interactiva" width="380" /></a>
 
 **Next.js · React · TypeScript · Three.js**
 
