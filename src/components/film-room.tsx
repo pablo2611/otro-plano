@@ -151,12 +151,14 @@ export default function FilmRoom({ onClose }: { onClose: () => void }) {
     if (!audio || !video) return;
     const nextMuted = !muted;
     audio.muted = nextMuted;
-    if (!nextMuted && !video.paused) {
+    if (!nextMuted && !video.paused && !buffering) {
       audio.currentTime = video.currentTime;
-      void audio.play().catch(() => setMuted(true));
+      void audio.play().catch((error: DOMException) => {
+        if (error.name !== "AbortError") setMuted(true);
+      });
     }
     setMuted(nextMuted);
-  }, [muted]);
+  }, [muted, buffering]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -164,7 +166,9 @@ export default function FilmRoom({ onClose }: { onClose: () => void }) {
     if (!audio || !video) return;
     if (playing && !buffering && !muted && !failed) {
       audio.currentTime = video.currentTime;
-      void audio.play().catch(() => setMuted(true));
+      void audio.play().catch((error: DOMException) => {
+        if (error.name !== "AbortError") setMuted(true);
+      });
     } else {
       audio.pause();
     }
