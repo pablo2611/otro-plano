@@ -107,6 +107,8 @@ export default function FilmRoom({ onClose }: { onClose: () => void }) {
 
   const screenRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [audioFailed, setAudioFailed] = useState(false);
   const glitchTimer = useRef<number | null>(null);
   const active = films[activeIndex];
 
@@ -145,10 +147,28 @@ export default function FilmRoom({ onClose }: { onClose: () => void }) {
 
   const toggleMute = useCallback(() => {
     const video = videoRef.current;
-    if (!video) return;
-    video.muted = !video.muted;
-    setMuted(video.muted);
-  }, []);
+    const audio = audioRef.current;
+    if (!audio || !video) return;
+    const nextMuted = !muted;
+    audio.muted = nextMuted;
+    if (!nextMuted && !video.paused) {
+      audio.currentTime = video.currentTime;
+      void audio.play().catch(() => setMuted(true));
+    }
+    setMuted(nextMuted);
+  }, [muted]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    const video = videoRef.current;
+    if (!audio || !video) return;
+    if (playing && !buffering && !muted && !failed) {
+      audio.currentTime = video.currentTime;
+      void audio.play().catch(() => setMuted(true));
+    } else {
+      audio.pause();
+    }
+  }, [playing, buffering, muted, failed, activeIndex]);
 
   const restart = useCallback(() => {
     const video = videoRef.current;
@@ -186,7 +206,6 @@ export default function FilmRoom({ onClose }: { onClose: () => void }) {
     if (!video) return;
     video.muted = true;
     video.defaultMuted = true;
-    setMuted(true);
     const attemptPlay = () => {
       video.play().catch(() => setPlaying(false));
     };
@@ -240,6 +259,14 @@ export default function FilmRoom({ onClose }: { onClose: () => void }) {
       }}
     >
       <section className="film-room" style={roomStyle} role="dialog" aria-modal="true" aria-labelledby="film-room-title">
+        <audio
+          ref={audioRef}
+          src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/audio/materia.mp3`}
+          preload="metadata"
+          loop
+          muted={muted}
+          onError={() => setAudioFailed(true)}
+        />
         <header className="film-room-head">
           <div className="film-room-heading">
             <p className="eyebrow eyebrow-light"><span className="eyebrow-marker" /> OTRO PLANO® — SALA DE CINE / 04 FILMS</p>
@@ -271,7 +298,14 @@ export default function FilmRoom({ onClose }: { onClose: () => void }) {
               onPlaying={() => setBuffering(false)}
               onCanPlay={() => setBuffering(false)}
               onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
-              onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
+              onTimeUpdate={(event) => {
+                const time = event.currentTarget.currentTime;
+                setCurrentTime(time);
+                const audio = audioRef.current;
+                if (audio && !audio.paused && Math.abs(audio.currentTime - time) > 0.6) {
+                  audio.currentTime = time;
+                }
+              }}
               onError={() => {
                 setFailed(true);
                 setBuffering(false);
@@ -339,12 +373,14 @@ export default function FilmRoom({ onClose }: { onClose: () => void }) {
             </button>
             <button
               type="button"
-              className="film-btn"
+              className="film-btn film-music-btn"
               onClick={toggleMute}
-              aria-label={muted ? "Activar sonido" : "Silenciar"}
+              aria-label={muted ? "Activar música" : "Silenciar música"}
               aria-pressed={!muted}
+              disabled={audioFailed}
             >
               <ControlIcon name={muted ? "muted" : "sound"} />
+              <span>{audioFailed ? "Música no disponible" : muted ? "Activar música" : "Música activa"}</span>
             </button>
             <span className="film-timecode">{formatTime(currentTime)} <i>/</i> {formatTime(duration)}</span>
           </div>
@@ -432,6 +468,7 @@ export default function FilmRoom({ onClose }: { onClose: () => void }) {
 
         <footer className="film-room-foot">
           <span>MATERIAL DE ARCHIVO — PEXELS</span>
+          <span>MÚSICA ORIGINAL — MATERIA</span>
           <a href={active.creditUrl} target="_blank" rel="noreferrer">FILM DE {active.credit} ↗</a>
         </footer>
       </section>
