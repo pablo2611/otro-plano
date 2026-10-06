@@ -1,16 +1,52 @@
-# Otro Plano — premium-goalnew-landing-page
+<div align="center">
 
-Landing page con React, Next.js y Three.js, preparada para GitHub Pages.
+# Otro Plano
 
-Demo: https://pablo2611.github.io/premium-goalnew-landing-page/
+### Diseño, movimiento y una pequeña dosis de lo improbable.
 
-## Desarrollo
+Una experiencia web para un estudio creativo: tipografía expresiva, una escultura 3D interactiva y una sala de cine experimental.
+
+**[Explorar la demo ↗](https://pablo2611.github.io/otro-plano/)** · [Ver el código](https://github.com/pablo2611/otro-plano)
+
+[![Vista previa de Otro Plano](docs/preview.jpg)](https://pablo2611.github.io/otro-plano/)
+
+**Next.js · React · TypeScript · Three.js**
+
+</div>
+
+## La experiencia
+
+- **Materia interactiva.** Escultura generativa en 3D: arrastra para girarla o cambia su material y color.
+- **Archivo vivo.** Proyectos con imágenes, fichas y relatos que se abren sin salir de la página.
+- **Sala de cine.** Cuatro films con reproducción, sonido, pantalla completa y efectos de intensidad.
+- **Diseño adaptable.** Navegación móvil, acceso por teclado y respeto por la preferencia de movimiento reducido.
+
+## Ejecutar en local
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Cada push a main publica automáticamente mediante GitHub Actions. Pages debe usar GitHub Actions como fuente.
+Abre [localhost:3000](http://localhost:3000).
 
-La página se exporta como sitio estático sin necesitar PostgreSQL. El ZIP original no incluye las tres imágenes de proyectos; se usan las imágenes de Pexels ya referenciadas en su sala de cine como reemplazo. Vídeos y carteles conservan sus fuentes externas y créditos.
+## Publicación
+
+Cada cambio en `main` compila y publica el sitio en GitHub Pages mediante [GitHub Actions](.github/workflows/pages.yml). La exportación es estática y no requiere una base de datos.
+
+```sh
+# macOS / Linux
+NEXT_PUBLIC_BASE_PATH=/otro-plano npm run build
+```
+
+```powershell
+# PowerShell
+$env:NEXT_PUBLIC_BASE_PATH = '/otro-plano'
+npm run build
+```
+
+Los archivos publicados se generan en `out/`.
+
+## Créditos y material visual
+
+Proyecto adaptado a partir del ZIP proporcionado. Los vídeos conservan los créditos y enlaces a sus autores en Pexels dentro de la sala de cine. Las tres imágenes de proyectos no estaban incluidas en el ZIP; se reemplazaron por carteles de ese mismo material audiovisual.

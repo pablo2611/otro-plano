@@ -23,7 +23,7 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /premium-goalnew-landing-page
+          NEXT_PUBLIC_BASE_PATH: /otro-plano
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out
@@ -37,3 +37,4 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+
